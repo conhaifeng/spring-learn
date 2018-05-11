@@ -78,6 +78,7 @@ import org.w3c.dom.NodeList;
  * @since 2.0
  * @see ParserContext
  * @see DefaultBeanDefinitionDocumentReader
+ * 
  */
 public class BeanDefinitionParserDelegate
 {
@@ -545,6 +546,7 @@ public class BeanDefinitionParserDelegate
 			BeanDefinition containingBean)
 	{
 
+		// TODO 此处为什么用到栈？
 		this.parseState.push(new BeanEntry(beanName));
 
 		// class属性
@@ -562,9 +564,11 @@ public class BeanDefinitionParserDelegate
 			{
 				parent = ele.getAttribute(PARENT_ATTRIBUTE);
 			}
+
+			// TODO 学习如何创建BeanDefinition. ClassUtils.forName
 			AbstractBeanDefinition bd = createBeanDefinition(className, parent);
 
-			//其他属性，如abstract、lazy-init等
+			// 其他属性，如abstract、scope、lazy-init等
 			parseBeanDefinitionAttributes(ele, beanName, containingBean, bd);
 			bd.setDescription(DomUtils.getChildElementValueByTagName(ele, DESCRIPTION_ELEMENT));
 
@@ -575,9 +579,9 @@ public class BeanDefinitionParserDelegate
 			// replaced-method属性
 			parseReplacedMethodSubElements(ele, bd.getMethodOverrides());
 
-			//构造函数
+			// 构造函数
 			parseConstructorArgElements(ele, bd);
-			//property
+			// property
 			parsePropertyElements(ele, bd);
 			parseQualifierElements(ele, bd);
 
@@ -587,6 +591,7 @@ public class BeanDefinitionParserDelegate
 			return bd;
 		} catch (ClassNotFoundException ex)
 		{
+			// TODO 学习error处理
 			error("Bean class [" + className + "] not found", ele, ex);
 		} catch (NoClassDefFoundError err)
 		{
@@ -927,6 +932,7 @@ public class BeanDefinitionParserDelegate
 					{
 						this.parseState.push(new ConstructorArgumentEntry(index));
 						Object value = parsePropertyValue(ele, bd, null);
+						//ValueHolder保存构造器参数配置信息
 						ConstructorArgumentValues.ValueHolder valueHolder = new ConstructorArgumentValues.ValueHolder(
 								value);
 						if (StringUtils.hasLength(typeAttr))
@@ -944,6 +950,7 @@ public class BeanDefinitionParserDelegate
 						}
 						else
 						{
+							//如果配置了index，则将此构造器参数存入IndexedArgumentValue.
 							bd.getConstructorArgumentValues().addIndexedArgumentValue(index, valueHolder);
 						}
 					} finally
@@ -972,6 +979,7 @@ public class BeanDefinitionParserDelegate
 					valueHolder.setName(nameAttr);
 				}
 				valueHolder.setSource(extractSource(ele));
+				//如果未配置index，则将此构造器参数存入genericArgumentValues.
 				bd.getConstructorArgumentValues().addGenericArgumentValue(valueHolder);
 			} finally
 			{
@@ -1647,9 +1655,11 @@ public class BeanDefinitionParserDelegate
 		String namespaceUri = getNamespaceURI(node);
 		if (!isDefaultNamespace(namespaceUri))
 		{
+			//非默认命名空间，获取对应的Handler
 			NamespaceHandler handler = this.readerContext.getNamespaceHandlerResolver().resolve(namespaceUri);
 			if (handler != null)
 			{
+				//装饰
 				return handler.decorate(node, originalDef, new ParserContext(this.readerContext, this, containingBd));
 			}
 			else if (namespaceUri != null && namespaceUri.startsWith("http://www.springframework.org/"))

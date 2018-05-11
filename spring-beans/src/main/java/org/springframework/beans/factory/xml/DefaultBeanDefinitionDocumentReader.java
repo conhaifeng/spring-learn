@@ -148,7 +148,6 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	protected BeanDefinitionParserDelegate createDelegate(XmlReaderContext readerContext, Element root,
 			BeanDefinitionParserDelegate parentDelegate)
 	{
-
 		BeanDefinitionParserDelegate delegate = new BeanDefinitionParserDelegate(readerContext);
 		delegate.initDefaults(root, parentDelegate);
 		return delegate;
@@ -328,10 +327,11 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	 */
 	protected void processBeanDefinition(Element ele, BeanDefinitionParserDelegate delegate)
 	{
+		//解析Spring中的Bean标签
 		BeanDefinitionHolder bdHolder = delegate.parseBeanDefinitionElement(ele);
 		if (bdHolder != null)
 		{
-			// 解析自定义的属性和标签
+			// 解析自定义的属性和标签(此时的bean是默认命名空间)
 			bdHolder = delegate.decorateBeanDefinitionIfRequired(ele, bdHolder);
 			try
 			{
@@ -343,7 +343,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 						"Failed to register bean definition with name '" + bdHolder.getBeanName() + "'", ele, ex);
 			}
 			// Send registration event.
-			// 发出注册事件，告知此bean已加载完成
+			// 发出注册事件，告知此bean已加载完成，目前Spring未做任何逻辑处理
 			getReaderContext().fireComponentRegistered(new BeanComponentDefinition(bdHolder));
 		}
 	}

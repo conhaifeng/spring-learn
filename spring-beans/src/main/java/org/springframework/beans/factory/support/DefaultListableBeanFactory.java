@@ -819,6 +819,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 		BeanDefinition oldBeanDefinition;
 
+		//是否已存在，如果允许覆盖，则覆盖，否则抛异常
 		oldBeanDefinition = this.beanDefinitionMap.get(beanName);
 		if (oldBeanDefinition != null) {
 			if (!isAllowBeanDefinitionOverriding()) {

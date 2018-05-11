@@ -28,6 +28,8 @@ import org.springframework.core.AttributeAccessor;
  * <p>This is just a minimal interface: The main intention is to allow a
  * {@link BeanFactoryPostProcessor} such as {@link PropertyPlaceholderConfigurer}
  * to introspect and modify property values and other bean metadata.
+ * 
+ * <p>BeanDefinition是bean标签的内部表现形式，二者属性一一对应
  *
  * @author Juergen Hoeller
  * @author Rob Harrop

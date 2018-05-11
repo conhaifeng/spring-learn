@@ -60,9 +60,11 @@ public class BeanDefinitionReaderUtils {
 		bd.setParentName(parentName);
 		if (className != null) {
 			if (classLoader != null) {
+				//如果ClassLoader不为null，则以此ClassLoader加载此类
 				bd.setBeanClass(ClassUtils.forName(className, classLoader));
 			}
 			else {
+				//如果ClassLoader为null，则只记录此class name.
 				bd.setBeanClassName(className);
 			}
 		}
