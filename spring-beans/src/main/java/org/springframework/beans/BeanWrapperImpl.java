@@ -324,6 +324,7 @@ public class BeanWrapperImpl extends AbstractNestablePropertyAccessor implements
 					});
 				}
 				else {
+					// 如果不是public，且无访问权限，则设置访问权限
 					writeMethod.setAccessible(true);
 				}
 			}
@@ -343,6 +344,7 @@ public class BeanWrapperImpl extends AbstractNestablePropertyAccessor implements
 				}
 			}
 			else {
+				// 通过反射完成属性赋值，因此该属性必须有setter方法，否则Spring会抛异常.
 				writeMethod.invoke(getWrappedInstance(), value);
 			}
 		}

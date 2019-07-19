@@ -257,6 +257,7 @@ public abstract class AbstractNestablePropertyAccessor extends AbstractPropertyA
 					"Nested property in path '" + propertyName + "' does not exist", ex);
 		}
 		PropertyTokenHolder tokens = getPropertyNameTokens(getFinalPath(nestedPa, propertyName));
+		// 找到一个合适的BeanWrapper, 设置PropertyValue
 		nestedPa.setPropertyValue(tokens, new PropertyValue(propertyName, value));
 	}
 
@@ -424,7 +425,8 @@ public abstract class AbstractNestablePropertyAccessor extends AbstractPropertyA
 				}
 			}
 			Object oldValue = null;
-			try {
+			try {	
+				// 设置值
 				Object originalValue = pv.getValue();
 				Object valueToApply = originalValue;
 				if (!Boolean.FALSE.equals(pv.conversionNecessary)) {
@@ -451,6 +453,7 @@ public abstract class AbstractNestablePropertyAccessor extends AbstractPropertyA
 					}
 					pv.getOriginalPropertyValue().conversionNecessary = (valueToApply != originalValue);
 				}
+				// 对Bean实例设置属性值
 				ph.setValue(object, valueToApply);
 			}
 			catch (TypeMismatchException ex) {

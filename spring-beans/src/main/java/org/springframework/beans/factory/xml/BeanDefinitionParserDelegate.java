@@ -470,7 +470,7 @@ public class BeanDefinitionParserDelegate
 			checkNameUniqueness(beanName, aliases, ele);
 		}
 
-		// 解析其他属性
+		// 解析其他属性，并完成类加载
 		AbstractBeanDefinition beanDefinition = parseBeanDefinitionElement(ele, beanName, containingBean);
 		if (beanDefinition != null)
 		{
@@ -546,7 +546,7 @@ public class BeanDefinitionParserDelegate
 			BeanDefinition containingBean)
 	{
 
-		// TODO 此处为什么用到栈？
+		// TODO 此处为什么用到栈？---->入栈,表示当前正在处理此Entry,能跟踪当前处理,方便后续日志输出
 		this.parseState.push(new BeanEntry(beanName));
 
 		// class属性
@@ -565,7 +565,7 @@ public class BeanDefinitionParserDelegate
 				parent = ele.getAttribute(PARENT_ATTRIBUTE);
 			}
 
-			// TODO 学习如何创建BeanDefinition. ClassUtils.forName
+			// TODO 学习如何创建BeanDefinition. ClassUtils.forName，此处完成类加载
 			AbstractBeanDefinition bd = createBeanDefinition(className, parent);
 
 			// 其他属性，如abstract、scope、lazy-init等
@@ -601,6 +601,7 @@ public class BeanDefinitionParserDelegate
 			error("Unexpected failure during bean definition parsing", ele, ex);
 		} finally
 		{
+			//出栈，处理完毕
 			this.parseState.pop();
 		}
 
@@ -1607,6 +1608,8 @@ public class BeanDefinitionParserDelegate
 	public BeanDefinition parseCustomElement(Element ele, BeanDefinition containingBd)
 	{
 		String namespaceUri = getNamespaceURI(ele);
+		//根据命名空间选择NamespaceHandler解析xml，比如AopNamespaceHandler/ContextNamespaceHandler
+		//每个Handler都在init方法中注册了能解析的tag及对应的parser类
 		NamespaceHandler handler = this.readerContext.getNamespaceHandlerResolver().resolve(namespaceUri);
 		if (handler == null)
 		{

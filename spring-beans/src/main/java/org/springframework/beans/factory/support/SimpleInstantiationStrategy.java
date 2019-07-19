@@ -77,6 +77,7 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 							});
 						}
 						else {
+							// 获取此类的无参构造函数
 							constructorToUse =	clazz.getDeclaredConstructor((Class[]) null);
 						}
 						bd.resolvedConstructorOrFactoryMethod = constructorToUse;
@@ -86,6 +87,7 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 					}
 				}
 			}
+			// 通过反射，完成构造函数调用，实例化
 			return BeanUtils.instantiateClass(constructorToUse);
 		}
 		else {

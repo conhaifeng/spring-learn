@@ -184,7 +184,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		}
 		else
 		{
-			// 自定义命名空间需要自定义解析类
+			// 非默认命名空间子此解析，比如<aop:config>/<aop:before>等
 			delegate.parseCustomElement(root);
 		}
 	}
@@ -343,7 +343,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 						"Failed to register bean definition with name '" + bdHolder.getBeanName() + "'", ele, ex);
 			}
 			// Send registration event.
-			// 发出注册事件，告知此bean已加载完成，目前Spring未做任何逻辑处理
+			// 发出注册事件，告知此BeanDefinition已加载完成，目前Spring未做任何逻辑处理
 			getReaderContext().fireComponentRegistered(new BeanComponentDefinition(bdHolder));
 		}
 	}
