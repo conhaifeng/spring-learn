@@ -61,6 +61,7 @@ final class SimpleMetadataReader implements MetadataReader {
 		}
 
 		AnnotationMetadataReadingVisitor visitor = new AnnotationMetadataReadingVisitor(classLoader);
+		// 基于ASM框架解析class，获取class的所有信息
 		classReader.accept(visitor, ClassReader.SKIP_DEBUG);
 
 		this.annotationMetadata = visitor;

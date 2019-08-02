@@ -139,6 +139,7 @@ public class QualifierAnnotationAutowireCandidateResolver extends GenericTypeAwa
 	 */
 	@Override
 	public boolean isAutowireCandidate(BeanDefinitionHolder bdHolder, DependencyDescriptor descriptor) {
+		// 普通类和泛型类判断
 		boolean match = super.isAutowireCandidate(bdHolder, descriptor);
 		if (match && descriptor != null) {
 			match = checkQualifiers(bdHolder, descriptor.getAnnotations());
@@ -258,6 +259,7 @@ public class QualifierAnnotationAutowireCandidateResolver extends GenericTypeAwa
 			// If no attributes, the qualifier must be present
 			return false;
 		}
+		// 举例：{value=chromeService}
 		for (Map.Entry<String, Object> entry : attributes.entrySet()) {
 			String attributeName = entry.getKey();
 			Object expectedValue = entry.getValue();
@@ -270,6 +272,9 @@ public class QualifierAnnotationAutowireCandidateResolver extends GenericTypeAwa
 				// Fall back on bean definition attribute
 				actualValue = bd.getAttribute(attributeName);
 			}
+			// 重点：bdHolder.matchesName((String) expectedValue)
+			// 判断预期值是否与beanName相同，预期值：chromeService, beanName:chromeService
+			// @Qualifier("chromeService")
 			if (actualValue == null && attributeName.equals(AutowireCandidateQualifier.VALUE_KEY) &&
 					expectedValue instanceof String && bdHolder.matchesName((String) expectedValue)) {
 				// Fall back on bean name (or alias) match

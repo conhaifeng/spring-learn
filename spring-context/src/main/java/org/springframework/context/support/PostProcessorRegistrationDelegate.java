@@ -143,6 +143,7 @@ class PostProcessorRegistrationDelegate {
 
 		// Separate between BeanFactoryPostProcessors that implement PriorityOrdered,
 		// Ordered, and the rest.
+		// 按照实现了PriorityOrdered、Ordered接口的类和均未实现的类进行分类
 		List<BeanFactoryPostProcessor> priorityOrderedPostProcessors = new ArrayList<BeanFactoryPostProcessor>();
 		List<String> orderedPostProcessorNames = new ArrayList<String>();
 		List<String> nonOrderedPostProcessorNames = new ArrayList<String>();
@@ -161,6 +162,7 @@ class PostProcessorRegistrationDelegate {
 			}
 		}
 
+		// 以下代码，先调用priorityOrderedPostProcessors，在调用orderedPostProcessors，最后调用nonOrderedPostProcessors
 		// First, invoke the BeanFactoryPostProcessors that implement PriorityOrdered.
 		sortPostProcessors(beanFactory, priorityOrderedPostProcessors);
 		invokeBeanFactoryPostProcessors(priorityOrderedPostProcessors, beanFactory);
@@ -185,6 +187,7 @@ class PostProcessorRegistrationDelegate {
 		beanFactory.clearMetadataCache();
 	}
 
+	// 注册自定义的BeanPostProcessor
 	public static void registerBeanPostProcessors(
 			ConfigurableListableBeanFactory beanFactory, AbstractApplicationContext applicationContext) {
 
@@ -198,6 +201,7 @@ class PostProcessorRegistrationDelegate {
 
 		// Separate between BeanPostProcessors that implement PriorityOrdered,
 		// Ordered, and the rest.
+		// 此处与BeanFactoryPostProcessor类似，也是根据实现PriorityOrdered、Ordered接口和未实现以上两个接口进行分类
 		List<BeanPostProcessor> priorityOrderedPostProcessors = new ArrayList<BeanPostProcessor>();
 		List<BeanPostProcessor> internalPostProcessors = new ArrayList<BeanPostProcessor>();
 		List<String> orderedPostProcessorNames = new ArrayList<String>();
@@ -217,7 +221,9 @@ class PostProcessorRegistrationDelegate {
 				nonOrderedPostProcessorNames.add(ppName);
 			}
 		}
-
+		
+		// 以下只是将各类BeanPostProcessor进行注册（添加到BeanFactory中的beanPostProcessors这个list中）,
+		// 注意，此处并未直接调用。等待合适的时机再调用。
 		// First, register the BeanPostProcessors that implement PriorityOrdered.
 		sortPostProcessors(beanFactory, priorityOrderedPostProcessors);
 		registerBeanPostProcessors(beanFactory, priorityOrderedPostProcessors);
@@ -281,6 +287,7 @@ class PostProcessorRegistrationDelegate {
 			Collection<? extends BeanFactoryPostProcessor> postProcessors, ConfigurableListableBeanFactory beanFactory) {
 
 		for (BeanFactoryPostProcessor postProcessor : postProcessors) {
+			// 执行BeanPostProcessor的postProcessBeanFactory()方法。
 			postProcessor.postProcessBeanFactory(beanFactory);
 		}
 	}

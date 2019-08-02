@@ -239,7 +239,8 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		Object bean;
 
 		// Eagerly check singleton cache for manually registered singletons.
-		// 检查本地单例缓存singletonObjects是否已加载此Bean，再检查earlySingletonObjects是否已加载过，如果没有，则走下面的逻辑
+		// 检查本地单例缓存singletonObjects是否已创建此Bean，再检查earlySingletonObjects是否已加载过，如果没有，则走下面的逻辑
+		// 如果已经创建过此Bean，则不再重复加载，直接返回
 		Object sharedInstance = getSingleton(beanName);
 		if (sharedInstance != null && args == null) {
 			if (logger.isDebugEnabled()) {

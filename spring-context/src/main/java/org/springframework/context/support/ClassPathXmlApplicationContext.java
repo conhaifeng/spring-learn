@@ -190,10 +190,12 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 		super(parent);
 		Assert.notNull(paths, "Path array must not be null");
 		Assert.notNull(clazz, "Class argument must not be null");
+		//配置文件
 		this.configResources = new Resource[paths.length];
 		for (int i = 0; i < paths.length; i++) {
 			this.configResources[i] = new ClassPathResource(paths[i], clazz);
 		}
+		//刷新spring上下文，完成bean加载
 		refresh();
 	}
 

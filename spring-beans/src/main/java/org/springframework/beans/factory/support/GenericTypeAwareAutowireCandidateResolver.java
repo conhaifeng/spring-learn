@@ -70,6 +70,9 @@ public class GenericTypeAwareAutowireCandidateResolver implements AutowireCandid
 	 */
 	protected boolean checkGenericTypeMatch(BeanDefinitionHolder bdHolder, DependencyDescriptor descriptor) {
 		ResolvableType dependencyType = descriptor.getResolvableType();
+		dependencyType.getType().getClass();
+		// 如果是普通类，则 xx instanceof Class为true，即属于Class类的实例
+		// 如果是泛型类，则xx instanceof ParameterizedType为True，即属于ParameterizedType接口的实例
 		if (dependencyType.getType() instanceof Class) {
 			// No generic type -> we know it's a Class type-match, so no need to check again.
 			return true;

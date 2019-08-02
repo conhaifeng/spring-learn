@@ -746,6 +746,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		List<String> beanNames = new ArrayList<String>(this.beanDefinitionNames);
 
 		// Trigger initialization of all non-lazy singleton beans...
+		// 循环对bean进行实例化
 		for (String beanName : beanNames) {
 			//此步骤是将GenericBeanDefinition转换未RootBeanDefinition.
 			//因为在xml->BeanDefinition时，是GenericBeanDefinition.
@@ -979,6 +980,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	public Object doResolveDependency(DependencyDescriptor descriptor, String beanName,
 			Set<String> autowiredBeanNames, TypeConverter typeConverter) throws BeansException {
 
+		// 获取依赖的类型，返回的是field的类型type.
 		Class<?> type = descriptor.getDependencyType();
 		Object value = getAutowireCandidateResolver().getSuggestedValue(descriptor);
 		if (value != null) {

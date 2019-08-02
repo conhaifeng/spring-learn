@@ -268,6 +268,7 @@ public abstract class AbstractNestablePropertyAccessor extends AbstractPropertyA
 			String propertyName = pv.getName();
 			AbstractNestablePropertyAccessor nestedPa;
 			try {
+				// 找到对应的BeanWrapper, 通常是自身。
 				nestedPa = getPropertyAccessorForPropertyPath(propertyName);
 			}
 			catch (NotReadablePropertyException ex) {
@@ -278,6 +279,7 @@ public abstract class AbstractNestablePropertyAccessor extends AbstractPropertyA
 			if (nestedPa == this) {
 				pv.getOriginalPropertyValue().resolvedTokens = tokens;
 			}
+			// 通过BeanWrapper设置属性值, tokens中保存有属性名actualName, canonicalName(规范名字) 
 			nestedPa.setPropertyValue(tokens, pv);
 		}
 		else {
@@ -817,6 +819,7 @@ public abstract class AbstractNestablePropertyAccessor extends AbstractPropertyA
 			return nestedPa.getPropertyAccessorForPropertyPath(nestedPath);
 		}
 		else {
+			// 返回自身,一般是BeanWrapper.
 			return this;
 		}
 	}

@@ -25,7 +25,6 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -265,8 +264,10 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	public Set<BeanDefinition> findCandidateComponents(String basePackage) {
 		Set<BeanDefinition> candidates = new LinkedHashSet<BeanDefinition>();
 		try {
+			// 格式：classpath*:org/springframework/aop/service/**/*.class 
 			String packageSearchPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX +
 					resolveBasePackage(basePackage) + "/" + this.resourcePattern;
+			// 加载指定包中的class文件
 			Resource[] resources = this.resourcePatternResolver.getResources(packageSearchPath);
 			boolean traceEnabled = logger.isTraceEnabled();
 			boolean debugEnabled = logger.isDebugEnabled();
@@ -276,7 +277,11 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 				}
 				if (resource.isReadable()) {
 					try {
+						// new出读取当前class元信息的reader类(SimpleMetadataReader)
+						// SimpleMetadataReader基于ASM框架解析class，获取class的metadata元信息(实例化过程中就完成了解析)
 						MetadataReader metadataReader = this.metadataReaderFactory.getMetadataReader(resource);
+						// 判断是否是候选者：通过incluedFilters进行筛选，其中包括Component所属的TypeFilter, 判断元信息中的注解信息
+						// 是否包含Component注解，如果是，则返回true.
 						if (isCandidateComponent(metadataReader)) {
 							ScannedGenericBeanDefinition sbd = new ScannedGenericBeanDefinition(metadataReader);
 							sbd.setResource(resource);
@@ -343,7 +348,10 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 			}
 		}
 		for (TypeFilter tf : this.includeFilters) {
+			// 校验目标类的metadata中是否包含指定的annotation
+			// 注意：此处一般是默认的includeFilters, 包含Componnent/Named/ManagedBean这三个注解filter
 			if (tf.match(metadataReader, this.metadataReaderFactory)) {
+				// 判断是否 @Conditional注解的类
 				return isConditionMatch(metadataReader);
 			}
 		}
@@ -371,6 +379,8 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	 * @return whether the bean definition qualifies as a candidate component
 	 */
 	protected boolean isCandidateComponent(AnnotatedBeanDefinition beanDefinition) {
+		// 判断目标类是否是具体实现(非abstrac、非interface)
+		// 判断目标类是否是独立的类(顶级类或静态内部类)
 		return (beanDefinition.getMetadata().isConcrete() && beanDefinition.getMetadata().isIndependent());
 	}
 

@@ -83,8 +83,15 @@ public class ComponentScanBeanDefinitionParser implements BeanDefinitionParser {
 				ConfigurableApplicationContext.CONFIG_LOCATION_DELIMITERS);
 
 		// Actually scan for bean definitions and register them.
+		// 初始化Scanner, 注意添加了过滤器对类进行过滤，includeFilters中注册Component注解的过滤器
 		ClassPathBeanDefinitionScanner scanner = configureScanner(parserContext, element);
+		// 如果配置的是<component-scan>标签，则使用此parser进行解析，doScan方法会按扫描包路径，分析class文件metadata,
+		// 筛选出被@Component注解的类，解析为BeanDefinition，注册到BeanFactory中的beanDefinitionMap,
+		// 并返回Set<BeanDefinitionHolder>.
 		Set<BeanDefinitionHolder> beanDefinitions = scanner.doScan(basePackages);
+		// 此处完成某些PostProcessor的注册，作为bean注册(可以称之为processorDefinitions)
+		// 比如org.springframework.context.annotation.internalAutowiredAnnotationProcessor
+		// 此bean后续会实例化AutowiredAnnotationBeanPostProcessor，用于处理bean中属性的注入
 		registerComponents(parserContext.getReaderContext(), beanDefinitions, element);
 
 		return null;
@@ -97,6 +104,7 @@ public class ComponentScanBeanDefinitionParser implements BeanDefinitionParser {
 		}
 
 		// Delegate bean definition registration to scanner class.
+		// 使用默认过滤器，includeFilters中注册Component注解的过滤器
 		ClassPathBeanDefinitionScanner scanner = createScanner(parserContext.getReaderContext(), useDefaultFilters);
 		scanner.setResourceLoader(parserContext.getReaderContext().getResourceLoader());
 		scanner.setEnvironment(parserContext.getReaderContext().getEnvironment());
@@ -146,6 +154,8 @@ public class ComponentScanBeanDefinitionParser implements BeanDefinitionParser {
 			annotationConfig = Boolean.valueOf(element.getAttribute(ANNOTATION_CONFIG_ATTRIBUTE));
 		}
 		if (annotationConfig) {
+			// 注册AnnotationConfigProcessors, 以在后续处理类属性/方法上的注解
+			// 比如@Autowired/@Value等.
 			Set<BeanDefinitionHolder> processorDefinitions =
 					AnnotationConfigUtils.registerAnnotationConfigProcessors(readerContext.getRegistry(), source);
 			for (BeanDefinitionHolder processorDefinition : processorDefinitions) {
