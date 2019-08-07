@@ -472,7 +472,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		try {
 			// Give BeanPostProcessors a chance to return a proxy instead of the target bean instance.
-			// 是在此处返回实例的代理对象吗？？？？？
+			// 是在此处返回实例的代理对象吗？？？？？----No
 			Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
 			if (bean != null) {
 				return bean;
@@ -546,7 +546,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// Initialize the bean instance.
 		Object exposedObject = bean;
 		try {
-			// 填充Bean实例，设置property属性
+			// 填充Bean实例，设置property属性并完成@Autowired的自动注入
 			populateBean(beanName, mbd, instanceWrapper);
 			if (exposedObject != null) {
 				// 对Bean进行其他处理，比如Aware/BeanPostProcessor before Initialization/调用InitMethod/BeanPostProcessors after Initialization.
@@ -1239,6 +1239,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		if (hasInstAwareBpps || needsDepCheck) {
 			PropertyDescriptor[] filteredPds = filterPropertyDescriptorsForDependencyCheck(bw, mbd.allowCaching);
+			// 这里完成@Autowired的注入
 			if (hasInstAwareBpps) {
 				// 获取beanFactory中注册的BeanPostProcessor
 				for (BeanPostProcessor bp : getBeanPostProcessors()) {
@@ -1640,6 +1641,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		if (mbd == null || !mbd.isSynthetic()) {
 			// 在init-method调用之后，调用beanProcessor.postProcessAfterInitialization
+			// 如果有aop，则返回的是Bean的代理实例
 			wrappedBean = applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName);
 		}
 		return wrappedBean;

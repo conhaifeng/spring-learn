@@ -191,6 +191,7 @@ public abstract class AopUtils {
 	 */
 	public static boolean canApply(Pointcut pc, Class<?> targetClass, boolean hasIntroductions) {
 		Assert.notNull(pc, "Pointcut must not be null");
+		// 表达式是否匹配目标类：execution(* org.springframework.aop.service.AOPService.service*(..))
 		if (!pc.getClassFilter().matches(targetClass)) {
 			return false;
 		}
@@ -205,10 +206,12 @@ public abstract class AopUtils {
 		classes.add(targetClass);
 		for (Class<?> clazz : classes) {
 			Method[] methods = clazz.getMethods();
+			// 遍历所有bean中所有方法，是否与表达式匹配
 			for (Method method : methods) {
 				if ((introductionAwareMethodMatcher != null &&
 						introductionAwareMethodMatcher.matches(method, targetClass, hasIntroductions)) ||
 						methodMatcher.matches(method, targetClass)) {
+					// 类中只要有一个方法匹配就返回(说明要创建代理)
 					return true;
 				}
 			}
@@ -244,6 +247,7 @@ public abstract class AopUtils {
 			return ((IntroductionAdvisor) advisor).getClassFilter().matches(targetClass);
 		}
 		else if (advisor instanceof PointcutAdvisor) {
+			// 传入Advice的作用是获取PointCut
 			PointcutAdvisor pca = (PointcutAdvisor) advisor;
 			return canApply(pca.getPointcut(), targetClass, hasIntroductions);
 		}
@@ -277,10 +281,14 @@ public abstract class AopUtils {
 				// already processed
 				continue;
 			}
+			// 传入advice的作用是获取其中的PointCut
+			// clazz是目前正在处理的bean
+			// 判断当前bean是否与Advice包含的切点表达式匹配，如果匹配则创建对应的代理
 			if (canApply(candidate, clazz, hasIntroductions)) {
 				eligibleAdvisors.add(candidate);
 			}
 		}
+		// eligible:合格的
 		return eligibleAdvisors;
 	}
 

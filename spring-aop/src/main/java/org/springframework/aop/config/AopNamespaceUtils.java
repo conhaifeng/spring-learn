@@ -66,6 +66,10 @@ public abstract class AopNamespaceUtils {
 
 		BeanDefinition beanDefinition = AopConfigUtils.registerAspectJAutoProxyCreatorIfNecessary(
 				parserContext.getRegistry(), parserContext.extractSource(sourceElement));
+		// 判断 proxy-target-class 的值，如果为True,
+		// 对org.springframework.aop.config.internalAutoProxyCreator对应的Bean
+		// 添加属性proxyTargetClass:true
+		// 使用CGLib进行动态代理
 		useClassProxyingIfNecessary(parserContext.getRegistry(), sourceElement);
 		registerComponentIfNecessary(beanDefinition, parserContext);
 	}
@@ -83,6 +87,9 @@ public abstract class AopNamespaceUtils {
 		if (sourceElement != null) {
 			boolean proxyTargetClass = Boolean.valueOf(sourceElement.getAttribute(PROXY_TARGET_CLASS_ATTRIBUTE));
 			if (proxyTargetClass) {
+				// 对org.springframework.aop.config.internalAutoProxyCreator对应的Bean添加
+				// 属性proxyTargetClass:true
+				// 使用CGLib进行动态代理
 				AopConfigUtils.forceAutoProxyCreatorToUseClassProxying(registry);
 			}
 			boolean exposeProxy = Boolean.valueOf(sourceElement.getAttribute(EXPOSE_PROXY_ATTRIBUTE));
